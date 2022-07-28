@@ -1,0 +1,83 @@
+<!-- DataTales Example -->
+<div class="card shadow mb-4">
+  <div class="card-header py-3">
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-modal">
+      <i class="fas fa-plus"></i>
+    </button>
+  </div>
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Date</th>
+            <th>Image</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% for(let i=0; i<article.length; i++){ %>
+            <tr>
+              <td>
+                <%= i+1 %>
+              </td>
+              <td>
+                <%= article[i].title %>
+              </td>
+              <td>
+                <%= article[i].description %>
+              </td>
+              <td>
+                <%= article[i].createdAt %>
+              </td>
+              <td><img src='http://localhost:5000/<%= article[i].imageUrl %>' alt='<%= i+1 %>'
+                  class="img-thumbnail w-25">
+              </td>
+              <td>
+                <form id="form-<%= article[i].id %>" onsubmit="return confirmationAlert(event)">
+                  <button href="javascript:void()" type="button" class="btn btn-warning btn-circle btn-sm button-update"
+                    data-id="<%= article[i].id %>" data-title="<%= article[i].title %>"
+                    data-description="<%= article[i].description %>"><i class="fas fa-edit"></i></button>
+
+                  <button type="submit" name="submit" class="btn btn-danger btn-circle btn-sm"><i
+                      class="fas fa-trash"></i></button>
+                </form>
+
+                <script>
+                  function confirmationAlert(event) {
+                    let myForm = document.getElementById('form-<%= article[i].id %>')
+                    event.preventDefault()
+                    Swal.fire({
+                      title: 'Apakah anda yakin?',
+                      text: "Data anda akan dihapus permanen!",
+                      icon: 'warning',
+                      showCancelButton: true,
+                      confirmButtonColor: '#3085d6',
+                      cancelButtonColor: '#d33',
+                      confirmButtonText: 'Ya, hapus!'
+                    }).then(async (result) => {
+                      if (result.isConfirmed) {
+                        const request = new XMLHttpRequest();
+                        await Swal.fire(
+                          'Deleted',
+                          'Your Data Has Been Deleted',
+                          'success'
+                        )
+                        await request.open('post', '/admin/article/<%= article[i].id %>?_method=DELETE')
+                        await request.send(new FormData(myForm))
+                        await location.reload()
+                      }
+                    })
+                  }
+                </script>
+              </td>
+            </tr>
+            <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
